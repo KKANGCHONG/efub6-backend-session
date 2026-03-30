@@ -61,4 +61,5 @@ public class AccountsService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원을 찾을 수 없습니다."));
         accountRepository.delete(account);
     }
+
 }

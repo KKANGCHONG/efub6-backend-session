@@ -60,4 +60,5 @@ public class AccountsController {
         response.put("message", "성공적으로 탈퇴되었습니다.");
         return ResponseEntity.ok(response);
     }
+
 }

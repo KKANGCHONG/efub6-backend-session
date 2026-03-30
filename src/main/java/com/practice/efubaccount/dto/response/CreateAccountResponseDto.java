@@ -10,17 +10,17 @@ import lombok.Getter;
 @Builder @Getter
 @AllArgsConstructor
 public class CreateAccountResponseDto {
-    private Long id;
-    private String nickname;
-    private String email;
-    private String bio;
-
-    public static CreateAccountResponseDto from(Account account) {
-        return CreateAccountResponseDto.builder()
-                .id(account.getAccountId())
-                .nickname(account.getNickname())
-                .email(account.getEmail())
-                .bio(account.getBio())
-                .build();
-    }
+//    private Long id;
+//    private String nickname;
+//    private String email;
+//    private String bio;
+//
+//    public static CreateAccountResponseDto from(Account account) {
+//        return CreateAccountResponseDto.builder()
+//                .id(account.getAccountId())
+//                .nickname(account.getNickname())
+//                .email(account.getEmail())
+//                .bio(account.getBio())
+//                .build();
+//    }
 }

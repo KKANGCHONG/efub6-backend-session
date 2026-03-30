@@ -7,18 +7,18 @@ import lombok.Getter;
 @Getter
 public class CreateAccountRequestDto {
 
-    private String email;
-
-    private String password;
-
-    private String nickname;
-
-    // Account 객체로 build
-    public Account toEntity() {
-        return Account.builder()
-                .email(email)
-                .password(password)
-                .nickname(nickname)
-                .build();
-    }
+//    private String email;
+//
+//    private String password;
+//
+//    private String nickname;
+//
+//    // Account 객체로 build
+//    public Account toEntity() {
+//        return Account.builder()
+//                .email(email)
+//                .password(password)
+//                .nickname(nickname)
+//                .build();
+//    }
 }

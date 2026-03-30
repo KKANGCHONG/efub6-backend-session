@@ -11,15 +11,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AccountResponseDto {
 
-    private String nickname;
-    private String email;
-    private String bio;
-
-    public static AccountResponseDto from(Account account) {
-        return AccountResponseDto.builder()
-                .nickname(account.getNickname())
-                .email(account.getEmail())
-                .bio(account.getBio())
-                .build();
-    }
+//    private String nickname;
+//    private String email;
+//    private String bio;
+//
+//    public static AccountResponseDto from(Account account) {
+//        return AccountResponseDto.builder()
+//                .nickname(account.getNickname())
+//                .email(account.getEmail())
+//                .bio(account.getBio())
+//                .build();
+//    }
 }
