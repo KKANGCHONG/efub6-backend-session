@@ -70,4 +70,10 @@ public class AccountService {
                 .orElseThrow(()-> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
+    @Transactional(readOnly=true)
+    public Account findByEmail(String email) {
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
+
 }
