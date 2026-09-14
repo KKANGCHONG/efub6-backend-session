@@ -26,7 +26,10 @@ public enum ErrorCode {
     // follow
     FOLLOW_ALREADY_EXISTS(400, "이미 팔로우한 사용자입니다."),
     FOLLOW_NOT_FOUND(404, "팔로우 관계가 존재하지 않습니다."),
-    CANNOT_FOLLOW_SELF(400, "자기 자신을 팔로우할 수 없습니다.");
+    CANNOT_FOLLOW_SELF(400, "자기 자신을 팔로우할 수 없습니다."),
+
+    //auth
+    INVALID_REFRESH_TOKEN(401, "유효하지 않은 리프레시 토큰입니다.");
 
     private final int status;
     private final String message;
