@@ -10,8 +10,14 @@ public class OAuth2UserInfo {
     }
 
     //TODO: 이름 반환
-
-
+    public String getNickname() {
+        return (String) attributes.get("name");
+    }
     //TODO: 이메일 반환
+    public String getEmail() {
+        return (String) attributes.get("email");
+    }
+
+
 }
 
