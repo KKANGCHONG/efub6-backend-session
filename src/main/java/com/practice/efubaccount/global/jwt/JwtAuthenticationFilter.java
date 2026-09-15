@@ -41,11 +41,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // Authorization 헤더에서 Bearer 접두사를 제거해 토큰 추출
     private String getAccessToken(String authorizationHeader){
-//        // Token이 null이 아니고 Bearer로 시작해야지 정상적인 Token
-//        if(authorizationHeader != null && authorizationHeader.startsWith(BEARER)){
-//            // 정상적인 토큰이라면 앞에 Bearer 제거 후 리턴
-//            return authorizationHeader.substring(BEARER.length());
-//        }
+        // Token이 null이 아니고 Bearer로 시작해야지 정상적인 Token
+        if(authorizationHeader != null && authorizationHeader.startsWith(BEARER)){
+            // 정상적인 토큰이라면 앞에 Bearer 제거 후 리턴
+            return authorizationHeader.substring(BEARER.length());
+        }
         return null;
     }
 }

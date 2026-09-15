@@ -13,7 +13,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    //TODO 1.현재 인증된 사용자 email 조회
+    private final AuthService authService;
 
+    //TODO 1.현재 인증된 사용자 email 조회
+    @GetMapping("/me")
+    public ResponseEntity<?> getEmail() {
+        return ResponseEntity.status(HttpStatus.OK).body(SecurityUtils.getCurrentUserEmail());
+    }
     //TODO 2. 토큰 재발급
+    @PostMapping("/token")
+    public ResponseEntity<TokenResponseDto> reissueAccessToken(@RequestBody TokenRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.reissueAccessToken(requestDto.getRefreshToken()));
+    }
 }
