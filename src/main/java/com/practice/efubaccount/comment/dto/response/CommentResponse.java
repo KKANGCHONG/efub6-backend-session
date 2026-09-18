@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentResponse {
+    // 필드 정의
     private final Long commentId;
     private final Long postId;
     private final String writerNickname;
@@ -29,4 +30,5 @@ public class CommentResponse {
                 .updatedAt(comment.getModifiedAt())
                 .build();
     }
+
 }

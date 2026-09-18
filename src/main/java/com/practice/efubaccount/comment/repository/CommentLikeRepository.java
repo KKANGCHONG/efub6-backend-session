@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
-
     boolean existsByCommentAndAccount(Comment comment, Account account);
 
     Optional<CommentLike> findByCommentAndAccount(Comment comment, Account account);

@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentLike {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_like_id")
@@ -30,4 +29,5 @@ public class CommentLike {
         this.comment = comment;
         this.account = account;
     }
+
 }

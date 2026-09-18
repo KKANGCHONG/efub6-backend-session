@@ -7,10 +7,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("hello")
 public class HttpExampleController {
 
-    @GetMapping
-    public String hello(@RequestParam("name") String name){
-        return "hello" + name;
-    }
 
     @GetMapping("/obj")
     public ExampleDto hello(@RequestParam("name") String name,
