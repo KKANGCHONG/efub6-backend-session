@@ -1,6 +1,7 @@
 package com.practice.efubaccount.account.service;
 
 import com.practice.efubaccount.account.domain.Account;
+import com.practice.efubaccount.account.domain.AccountStatus;
 import com.practice.efubaccount.account.dto.response.TokenResponseDto;
 import com.practice.efubaccount.global.exception.CustomException;
 import com.practice.efubaccount.global.exception.ErrorCode;
@@ -25,7 +26,13 @@ public class AuthService {
     public TokenResponseDto reissueAccessToken(String refreshToken) {
         // TODO 1.전달받은 리프레시 토큰에서 이메일을 추출하여 사용자 정보 가져오기
         String email = tokenProvider.extractEmail(refreshToken);
+        if (email == null) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
         Account account = accountService.findByEmail(email);
+        if (account.getStatus() == AccountStatus.DEACTIVATED) {
+            throw new CustomException(ErrorCode.ACCOUNT_DEACTIVATED);
+        }
 
         // TODO 2.Redis에서 해당 사용자 Id를 키로 하는 리프래시 토큰 가져오기
         String storedRefreshToken = redisTemplate.opsForValue().get(account.getAccountId().toString());

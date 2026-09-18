@@ -21,6 +21,8 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class TokenProvider {
+    public enum TokenType { ACCESS, REFRESH }
+    private static final String TOKEN_TYPE_CLAIM = "tokenType";
 
     // application.yml에 저장한 jwt값 가져오기
     @Value("${jwt.secretKey}")
@@ -51,6 +53,7 @@ public class TokenProvider {
                 .setExpiration(new Date(now.getTime() + accessTokenExpiration))
                 // 내용 - 토큰 제목: 사용자 이메일
                 .setSubject(account.getEmail())
+                .claim(TOKEN_TYPE_CLAIM, TokenType.ACCESS.name())
                 // 서명 - 시크릿키와 함께 해시값을 HS256 방식으로 암호화
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
@@ -68,6 +71,7 @@ public class TokenProvider {
                 .setExpiration(new Date(now.getTime() + refreshTokenExpiration))
                 // 내용 - 토큰 제목: 사용자 이메일
                 .setSubject(account.getEmail())
+                .claim(TOKEN_TYPE_CLAIM, TokenType.REFRESH.name())
                 // 서명 - 시크릿키와 함께 해시값을 HS256 방식으로 암호화
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
@@ -86,23 +90,23 @@ public class TokenProvider {
      * AccessToken에서 email 추출
      * 토큰이 유효한지 확인 후 이메일 클레임 값을 추출
      */
-    public String extractEmail(String accessToken){
-        if(isValidToken(accessToken)){
-            return getClaims(accessToken).getSubject();
+    public String extractEmail(String refreshToken){
+        if(isValidToken(refreshToken, TokenType.REFRESH)){
+            return getClaims(refreshToken).getSubject();
         }
         return null;
     }
 
     //유효한 토큰인지 검증
-    public boolean isValidToken(String token){
+    public boolean isValidToken(String token, TokenType expectedType){
         try{
             // secretKey를 사용해 토큰 복호화
-            Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(token);
-            log.info("Validate token success");
-            return true;
+                    .parseClaimsJws(token)
+                    .getPayload();
+            return expectedType.name().equals(claims.get(TOKEN_TYPE_CLAIM, String.class));
         } catch (SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT token", e);
         } catch (ExpiredJwtException e) {

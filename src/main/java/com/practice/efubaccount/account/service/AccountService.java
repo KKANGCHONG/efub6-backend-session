@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -62,6 +63,21 @@ public class AccountService {
         accountDocumentRepository.save(accountDocument);
 
         return CreateAccountResponseDto.from(savedAccount);
+    }
+
+    // OAuth2 신규 회원도 일반 회원가입과 동일한 저장소에 등록한다.
+    @Transactional
+    public Account findOrCreateOAuth2Account(String email, String nickname) {
+        return accountRepository.findByEmail(email).orElseGet(() -> {
+            Account account = accountRepository.save(Account.builder()
+                    .email(email)
+                    .password(UUID.randomUUID().toString())
+                    .nickname(nickname)
+                    .build());
+            cacheAccount(account);
+            accountDocumentRepository.save(AccountDocument.from(account));
+            return account;
+        });
     }
 
     //Redis에서 ID로 email 조회
@@ -119,6 +135,7 @@ public class AccountService {
         Account account = accountRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원을 찾을 수 없습니다."));
         account.changeStatus(AccountStatus.DEACTIVATED);
+        redisTemplate.delete(accountId.toString());
     }
 
     // 회원 물리적 삭제
@@ -130,6 +147,7 @@ public class AccountService {
         //Redis에서 삭제
         String redisKey = ACCOUNT_CACHE_KEY + accountId;
         redisTemplate.delete(redisKey);
+        redisTemplate.delete(accountId.toString());
 
         //MySQL에서 삭제
         accountRepository.delete(account);

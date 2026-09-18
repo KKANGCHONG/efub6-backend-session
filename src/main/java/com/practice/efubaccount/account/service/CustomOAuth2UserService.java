@@ -1,14 +1,14 @@
 package com.practice.efubaccount.account.service;
 
 import com.practice.efubaccount.account.domain.Account;
-import com.practice.efubaccount.account.repository.AccountRepository;
+import com.practice.efubaccount.account.domain.AccountStatus;
 import com.practice.efubaccount.global.utils.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
@@ -18,12 +18,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     //OAuth2UserRequest를 받아 사용자를 로드하는 메서드
     @Override
@@ -31,12 +30,23 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // OAuth2 사용자 정보 로드
         OAuth2User oAuth2User = new DefaultOAuth2UserService().loadUser(userRequest);
 
-        // 구글 OAuth2UserInfo 객체 생성
-        OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2User.getAttributes());
+        boolean kakao = "kakao".equals(userRequest.getClientRegistration().getRegistrationId());
+        if (kakao && oAuth2User.getAttributes().get("id") == null) {
+            throw new OAuth2AuthenticationException(new OAuth2Error("id_missing"),
+                    "카카오 사용자 ID가 없습니다.");
+        }
+        OAuth2UserInfo oAuth2UserInfo = new OAuth2UserInfo(oAuth2User.getAttributes(), kakao);
+        String email = oAuth2UserInfo.getEmail();
+        if (email == null || email.isBlank()) {
+            throw new OAuth2AuthenticationException(new OAuth2Error("email_missing"),
+                    "OAuth2 제공자가 이메일을 반환하지 않았습니다.");
+        }
 
-        // DB에서 해당 사용자 조회 -> 없으면 새로 생성
-        Account account = accountRepository.findByEmail(oAuth2UserInfo.getEmail())
-                .orElseGet(() -> createAccount(oAuth2UserInfo));
+        Account account = accountService.findOrCreateOAuth2Account(email, oAuth2UserInfo.getNickname());
+        if (account.getStatus() == AccountStatus.DEACTIVATED) {
+            throw new OAuth2AuthenticationException(new OAuth2Error("account_deactivated"),
+                    "탈퇴한 계정은 로그인할 수 없습니다.");
+        }
 
         // 사용자 속성 생성
         Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
@@ -50,13 +60,4 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 "email"); // 기본 식별자 지정
     }
 
-    //사용자 생성 메서드 : OAuth2로그인은 비밀번호가 필요하지 않으므로 ""로 처리
-    private Account createAccount(OAuth2UserInfo oAuth2UserInfo) {
-        Account account = Account.builder()
-                .email(oAuth2UserInfo.getEmail())
-                .password("")
-                .nickname(oAuth2UserInfo.getNickname())
-                .build();
-        return accountRepository.save(account);
-    }
 }

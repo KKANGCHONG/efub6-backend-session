@@ -29,7 +29,8 @@ public enum ErrorCode {
     CANNOT_FOLLOW_SELF(400, "자기 자신을 팔로우할 수 없습니다."),
 
     //auth
-    INVALID_REFRESH_TOKEN(401, "유효하지 않은 리프레시 토큰입니다.");
+    INVALID_REFRESH_TOKEN(401, "유효하지 않은 리프레시 토큰입니다."),
+    ACCOUNT_DEACTIVATED(403, "탈퇴한 계정입니다.");
 
     private final int status;
     private final String message;
