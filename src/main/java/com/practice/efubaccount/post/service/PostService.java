@@ -18,8 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -57,14 +55,13 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostPageResponse getPosts(int page, int size) {
-         // PageRequest 생성 → Repository 조회 → 응답 DTO 변환을 구현한다.
-         PageRequest pageRequest = PageRequest.of(
-                 page,
-                 size,
-                 Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"))
-         );
-         Page<PostSummary> posts = postRepository.findPostSummaries(pageRequest);
-         return PostPageResponse.from(posts);
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"))
+        );
+        Page<PostSummary> posts = postRepository.findPostSummaries(pageRequest);
+        return PostPageResponse.from(posts);
     }
 
     @Transactional
